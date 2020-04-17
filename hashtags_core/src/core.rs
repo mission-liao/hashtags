@@ -31,4 +31,9 @@ impl HashTags {
         let f = t.tokenize(filter)?;
         Ok(self.p.query_notes(&f.ands, &f.ors)?)
     }
+
+    pub fn update(&mut self, note: &str, hash: Vec<u8>) -> Result<(), Error> {
+        let tags = extract_tags(note)?;
+        self.p.update_note_by_hash(&hash, note, tags)
+    }
 }
