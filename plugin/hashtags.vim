@@ -29,7 +29,14 @@ function! s:query_notes(filter) abort
     execute "setlocal nobuflisted buftype=nofile bufhidden=delete noswapfile nomodifiable readonly"
 endfunction
 
+function! s:update_note()
+    let buff = join(getline(1, '$'), "\n")
+    let t = system(g:hashtags_command . " update -n '" . l:buff . "'")
+    echo t
+endfunction
+
 command! SaveNote call s:save_note()
+command! UpdateNote call s:update_note()
 command! -nargs=1 QueryNotes call s:query_notes(<args>)
 
 call s:restore_cpo()

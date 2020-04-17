@@ -6,9 +6,12 @@ use hashtags::core::HashTags;
 use serde_json;
 use std::string::String;
 
+const SEP_SIMPLE: &str = "-----------------------------------------------------------";
+const PATT_HASH: &str = ", Hash: ";
+
 fn get_db_path() -> String {
     let mut home_path = dirs::home_dir().unwrap();
-    home_path.push(".notes.db");
+    home_path.push("notes.db");
     String::from(home_path.to_str().unwrap())
 }
 
@@ -40,6 +43,14 @@ fn main() {
                         .default_value("simple"),
                 ),
         )
+        .subcommand(
+            App::new("update").about("update note").arg(
+                Arg::with_name("note")
+                    .short("n")
+                    .takes_value(true)
+                    .value_name("note"),
+            ),
+        )
         .get_matches();
 
     let mut hs = HashTags::new(get_db_path().as_str()).unwrap();
@@ -70,14 +81,31 @@ fn main() {
             "simple" => {
                 for n in notes {
                     println!("{}", n.content);
-                    println!("-----------------------------------------------------------");
+                    println!("{}", SEP_SIMPLE);
                     println!("{}, Hash: {}", n.time_created, base64::encode(n.hash));
-                    println!("===");
+                    println!("===============================");
                 }
             }
             _ => panic!("unknown output format: {}", output),
         };
         return;
+    }
+    if let Some(m) = matches.subcommand_matches("update") {
+        let note = m.value_of("note").unwrap();
+        // Find hash, and trim those meta data from notes
+        if let Some(i) = note.find(SEP_SIMPLE) {
+            let real_note = &note[..i - 1]; // trim the EOL
+            let meta = &note[i + SEP_SIMPLE.len()..];
+            if let Some(i) = meta.find(PATT_HASH) {
+                let hash = base64::decode(&meta[i + PATT_HASH.len()..]).unwrap();
+                hs.update(real_note, hash).unwrap();
+                return;
+            } else {
+                panic!("unable to locate hash in '{}'", meta);
+            }
+        } else {
+            panic!("unable to locate simple_sep in '{}'", note);
+        }
     }
     panic!("no subcommand provided");
 }
