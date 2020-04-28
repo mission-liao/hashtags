@@ -7,7 +7,8 @@ use hashtags::core::HashTags;
 use serde_json;
 use std::string::String;
 
-const SEP_SIMPLE: &str = "-----------------------------------------------------------";
+const SEP_SIMPLE: &str =
+    "--------------------------------------------------------------------------------";
 const PATT_HASH: &str = ", Hash: ";
 
 fn get_db_path() -> String {
@@ -88,7 +89,7 @@ fn main() {
                         n.time_created.trunc_subsecs(0),
                         base64::encode(n.hash)
                     );
-                    println!("===============================");
+                    println!("================================================================================");
                 }
             }
             _ => panic!("unknown output format: {}", output),
