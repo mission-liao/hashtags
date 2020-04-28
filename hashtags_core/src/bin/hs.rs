@@ -1,6 +1,7 @@
 extern crate base64;
 extern crate clap;
 extern crate dirs;
+use chrono::SubsecRound;
 use clap::{App, Arg};
 use hashtags::core::HashTags;
 use serde_json;
@@ -82,7 +83,11 @@ fn main() {
                 for n in notes {
                     println!("{}", n.content);
                     println!("{}", SEP_SIMPLE);
-                    println!("{}, Hash: {}", n.time_created, base64::encode(n.hash));
+                    println!(
+                        "{}, Hash: {}",
+                        n.time_created.trunc_subsecs(0),
+                        base64::encode(n.hash)
+                    );
                     println!("===============================");
                 }
             }
