@@ -9,6 +9,8 @@ use std::string::String;
 
 const SEP_SIMPLE: &str =
     "--------------------------------------------------------------------------------";
+const SEP_EQUAL: &str =
+    "================================================================================";
 const PATT_HASH: &str = ", Hash: ";
 
 fn get_db_path() -> String {
@@ -41,7 +43,7 @@ fn main() {
                     Arg::with_name("output_format")
                         .short("o")
                         .takes_value(true)
-                        .possible_values(&["simple", "json"])
+                        .possible_values(&["simple", "json", "concise"])
                         .default_value("simple"),
                 ),
         )
@@ -89,7 +91,13 @@ fn main() {
                         n.time_created.trunc_subsecs(0),
                         base64::encode(n.hash)
                     );
-                    println!("================================================================================");
+                    println!("{}", SEP_EQUAL);
+                }
+            }
+            "concise" => {
+                for n in notes {
+                    println!("{}", n.content);
+                    println!("{}", SEP_EQUAL);
                 }
             }
             _ => panic!("unknown output format: {}", output),

@@ -22,8 +22,8 @@ function! s:save_note()
     echo t
 endfunction
 
-function! s:query_notes(filter) abort
-    silent let notes = system(g:hashtags_command . " query -m 'simple' -o 'simple' -f " . a:filter)
+function! s:query_notes(filter,output_format) abort
+    silent let notes = system(g:hashtags_command . " query -m 'simple' -o " . a:output_format . " -f " . a:filter)
     execute "new"
     execute "put =l:notes"
     execute "setlocal nobuflisted buftype=nofile bufhidden=delete noswapfile nomodifiable readonly"
@@ -37,7 +37,7 @@ endfunction
 
 command! SaveNote call s:save_note()
 command! UpdateNote call s:update_note()
-command! -nargs=1 QueryNotes call s:query_notes(<args>)
+command! -nargs=* QueryNotes call s:query_notes(<f-args>)
 
 call s:restore_cpo()
 
